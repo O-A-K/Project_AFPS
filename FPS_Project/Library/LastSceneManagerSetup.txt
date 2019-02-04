@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Experimental/Oli/Scenes/CharacterTest.unity
+- path: Assets/Experimental/Jaz/Scenes/FPSRigibody.unity
   isLoaded: 1
   isActive: 1
