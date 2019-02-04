@@ -27,6 +27,14 @@ public class FPS_RigidbodyController : MonoBehaviour
         rigidbody.useGravity = false;
     }
 
+    private void Start()
+    {
+        IEnumerator checkForGrounded;
+        checkForGrounded = CheckForGrounded(5);
+
+        StartCoroutine(checkForGrounded);
+    }
+
     void FixedUpdate()
     {
         if (grounded)
@@ -34,15 +42,19 @@ public class FPS_RigidbodyController : MonoBehaviour
             Move();
         }
 
-        // We apply gravity manually for more tuning control
-        rigidbody.AddForce(new Vector3(0, -gravity * rigidbody.mass, 0));
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            print("Pressed Button");
+        }
 
+        // We apply gravity manually for more tuning control.
+        rigidbody.AddForce(new Vector3(0, -gravity * rigidbody.mass, 0));
         grounded = false;
     }
 
     void Move()
     {
-        // Calculate how fast we should be moving
+        // Calculate how fast we should be moving.
         float horizontalMovement = Input.GetAxis("Horizontal");
         float verticalMovement = Input.GetAxis("Vertical");
 
@@ -51,17 +63,17 @@ public class FPS_RigidbodyController : MonoBehaviour
 
         targetVelocity *= speed;
 
-        // Apply a force that attempts to reach our target velocity 
+        // Apply a force that attempts to reach our target velocity.
         Vector3 velocity = rigidbody.velocity;
         Vector3 velocityChange = (targetVelocity - velocity);
 
         velocityChange.x = Mathf.Clamp(velocityChange.x, -maxVelocityChange, maxVelocityChange);
-        velocityChange.y = 0;                                                                                   // Freezing Y when not jumping.
+        velocityChange.y = 0;                                                                        // Freezing Y when not jumping.
         velocityChange.z = Mathf.Clamp(velocityChange.z, -maxVelocityChange, maxVelocityChange);
 
         rigidbody.AddForce(velocityChange, ForceMode.VelocityChange);
 
-        JumpCheckGrounded();
+        Jump();
 
         // Jump (No Air Control)
         if (canJump)
@@ -71,13 +83,12 @@ public class FPS_RigidbodyController : MonoBehaviour
         }
     }
 
-    void JumpCheckGrounded()
+    void Jump()
     {
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetKeyDown(KeyCode.Space))
         {
-            // Bit shift the index of the Layer
+            // Bit shift the index of the Layer.
             int groundLayerMask = 1 << 9;
-
             RaycastHit hit;
 
             if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, (capsuleCollider.height / 2) + 0.1f, groundLayerMask))
@@ -91,15 +102,37 @@ public class FPS_RigidbodyController : MonoBehaviour
         }
     }
 
-    void OnCollisionStay() // Switch this to Raycasting on a coroutine.
+    IEnumerator CheckForGrounded(float vCoroutineRefreshRate)
     {
-        grounded = true;
+        while (true)
+        {
+            float tRefreshRateInSecs = 1 / vCoroutineRefreshRate;
+
+            RaycastHit hit;
+
+            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, (capsuleCollider.height / 2) + 0.1f))
+            {
+                if (hit.collider.gameObject.layer == 9)
+                {
+                    print("grounded");
+                    grounded = true;
+                }
+
+                else
+                {
+                    print("Not grounded");
+                    grounded = false;
+                }
+            }
+
+            //print("Checking For Grounded");
+            yield return new WaitForSeconds(tRefreshRateInSecs);
+        }
     }
 
     float CalculateJumpVerticalSpeed()
     {
-        // From the jump height and gravity we deduce the upwards speed 
-        // for the character to reach at the apex.
+        // From the jump height and gravity we deduce the upwards speed for the character to reach at the apex.
         return Mathf.Sqrt(2 * jumpHeight * gravity);
     }
 }
