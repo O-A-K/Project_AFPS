@@ -32,7 +32,7 @@ public class FPS_RigidbodyController : MonoBehaviour
         IEnumerator checkForGrounded;
         checkForGrounded = CheckForGrounded(5);
 
-        StartCoroutine(checkForGrounded);
+        //StartCoroutine(checkForGrounded);
     }
 
     void FixedUpdate()
@@ -78,8 +78,8 @@ public class FPS_RigidbodyController : MonoBehaviour
         // Jump (No Air Control)
         if (canJump)
         {
-            rigidbody.velocity = new Vector3(velocity.x, CalculateJumpVerticalSpeed(), velocity.z);
             canJump = false;
+            rigidbody.velocity = new Vector3(velocity.x, CalculateJumpVerticalSpeed(), velocity.z);
         }
     }
 
@@ -88,12 +88,13 @@ public class FPS_RigidbodyController : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             // Bit shift the index of the Layer.
-            int groundLayerMask = 1 << 9;
             RaycastHit hit;
 
-            if (Physics.Raycast(transform.position, transform.TransformDirection(Vector3.down), out hit, (capsuleCollider.height / 2) + 0.1f, groundLayerMask))
+            if (Physics.Raycast(transform.position, Vector3.down, out hit, (capsuleCollider.height / 2) + 0.25f))
             {
-                if (hit.collider)
+                Debug.DrawRay(transform.position + new Vector3(0, 0, 0.1f), Vector3.down * hit.distance, Color.yellow);
+
+                if (hit.collider.gameObject.layer == 9)
                 {
                     print("canJump");
                     canJump = true;
@@ -128,6 +129,11 @@ public class FPS_RigidbodyController : MonoBehaviour
             //print("Checking For Grounded");
             yield return new WaitForSeconds(tRefreshRateInSecs);
         }
+    }
+
+    private void OnCollisionStay(Collision collision)
+    {
+        grounded = true;
     }
 
     float CalculateJumpVerticalSpeed()
