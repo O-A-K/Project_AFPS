@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Photon.Pun;
+using Photon.Realtime;
 
 /// <summary>
 /// Just here to copy and paste it all over.
 /// <summary>
-public class PUN_LobbyManager : MonoBehaviour
+public class PUN_LobbyManager : MonoBehaviourPunCallbacks
 {
     string mST_GameVersion = "1";
 
@@ -34,6 +35,7 @@ public class PUN_LobbyManager : MonoBehaviour
         
     }
 
+    // Connect/Disconnect from Server, Create/Join/Leave Rooms.
     #region Network Functions
 
     private void ConnectToLobby()
@@ -53,7 +55,7 @@ public class PUN_LobbyManager : MonoBehaviour
 
     private void CreateRoom()
     {
-
+        PhotonNetwork.CreateRoom();
     }
 
     private void JoinRoom()
@@ -68,15 +70,29 @@ public class PUN_LobbyManager : MonoBehaviour
 
     #endregion
 
+    // PUN callbacks and some added debugging.
     #region Network Callbacks & Debugging
 
+    public override void OnConnectedToMaster()
+    {
+        Debug.Log("FPS_Project/PUN_LobbyManager: OnConnectedToMaster()");
+    }
 
+    public override void OnDisconnected(DisconnectCause cause)
+    {
+        Debug.Log("FPS_Project/PUN_LobbyManager: OnDisconnected() " + cause);
+    }
+
+    public override void OnCreatedRoom()
+    {
+        base.OnCreatedRoom();
+    }
 
     #endregion
 
     #region UI Management
 
-    void OpenClosePanel(RectTransform vPanel, bool vIsOpen)
+    public void OpenClosePanel(RectTransform vPanel, bool vIsOpen)
     {
 
     }
