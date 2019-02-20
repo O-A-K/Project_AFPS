@@ -1,9 +1,9 @@
-﻿using System.Collections;
+﻿using Photon.Pun;
+using Photon.Realtime;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using Photon.Pun;
-using Photon.Realtime;
 
 /// <summary>
 /// Just here to copy and paste it all over.
@@ -32,7 +32,7 @@ public class PUN_LobbyManager : MonoBehaviourPunCallbacks
 
     void Update()
     {
-        
+
     }
 
     // Connect/Disconnect from Server, Create/Join/Leave Rooms.
@@ -92,7 +92,37 @@ public class PUN_LobbyManager : MonoBehaviourPunCallbacks
 
     #region UI Management
 
-    public void OpenClosePanel(RectTransform vPanel, bool vIsOpen)
+    public void StartMenu()
+    {
+
+    }
+
+    public void OpenCloseMenuPanel(RectTransform vPanel, bool vOpening)
+    {
+        if (vOpening) // If we're opening the Panel.
+        {
+            if (!vPanel.gameObject.activeInHierarchy)
+            {
+                vPanel.gameObject.SetActive(true);
+            }
+        }
+
+        else // If we're closing the Panel.
+        {
+            if (vPanel.gameObject.activeInHierarchy)
+            {
+                vPanel.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    // Get Input Field string.
+    public void GetRoomName(string vRoomName)
+    {
+
+    }
+
+    public void GetPlayerName(string vPlayerName)
     {
 
     }
